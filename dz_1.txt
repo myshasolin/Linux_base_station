@@ -1,0 +1,61 @@
+Обзавестись установленной версией Linux Ubuntu.
+В качестве решения необходимо прислать текстовый файл (*.txt) с кодом команды, выводящей информацию о версии ОС (вместе с результатом работы этой команды)
+
+
+
+myshasolin@myshasolin-VirtualBox:~$ uname
+Linux
+myshasolin@myshasolin-VirtualBox:~$ uname -a
+Linux myshasolin-VirtualBox 5.11.0-43-generic #47~20.04.2-Ubuntu SMP Mon Dec 13 11:06:56 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+myshasolin@myshasolin-VirtualBox:~$ hostnamectl
+   Static hostname: myshasolin-VirtualBox
+         Icon name: computer-vm
+           Chassis: vm
+        Machine ID: 59b3d5a928a546399598afa72684ee35
+           Boot ID: 7c027bc8e4a749e58398faa03fa199a6
+    Virtualization: oracle
+  Operating System: Ubuntu 20.04.3 LTS
+            Kernel: Linux 5.11.0-43-generic
+      Architecture: x86-64
+myshasolin@myshasolin-VirtualBox:~$ ls
+ snap    Документы   Изображения   Общедоступные   Шаблоны
+ Видео   Загрузки    Музыка       'Рабочий стол'
+myshasolin@myshasolin-VirtualBox:~$ ll
+итого 100
+drwxr-xr-x 17 myshasolin myshasolin 4096 дек 16 14:52  ./
+drwxr-xr-x  3 root       root       4096 дек 14 18:47  ../
+-rw-------  1 myshasolin myshasolin  117 дек 16 14:51  .bash_history
+-rw-r--r--  1 myshasolin myshasolin  220 дек 14 18:47  .bash_logout
+-rw-r--r--  1 myshasolin myshasolin 3771 дек 14 18:47  .bashrc
+drwx------ 15 myshasolin myshasolin 4096 дек 14 19:29  .cache/
+drwx------ 12 myshasolin myshasolin 4096 дек 14 19:40  .config/
+drwx------  3 myshasolin myshasolin 4096 дек 16 13:00  .gnupg/
+drwx------  3 myshasolin myshasolin 4096 дек 14 18:52  .local/
+drwx------  5 myshasolin myshasolin 4096 дек 14 18:56  .mozilla/
+-rw-r--r--  1 myshasolin myshasolin  807 дек 14 18:47  .profile
+drwx------  4 myshasolin myshasolin 4096 дек 14 19:24  snap/
+drwx------  2 myshasolin myshasolin 4096 дек 14 19:39  .ssh/
+-rw-r--r--  1 myshasolin myshasolin    0 дек 16 13:05  .sudo_as_admin_successful
+-rw-r-----  1 myshasolin myshasolin    5 дек 16 14:52  .vboxclient-clipboard.pid
+-rw-r-----  1 myshasolin myshasolin    5 дек 16 14:52  .vboxclient-display-svga-x11.pid
+-rw-r-----  1 myshasolin myshasolin    5 дек 16 14:52  .vboxclient-draganddrop.pid
+-rw-r-----  1 myshasolin myshasolin    5 дек 16 14:52  .vboxclient-seamless.pid
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52  Видео/
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52  Документы/
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52  Загрузки/
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52  Изображения/
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52  Музыка/
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52  Общедоступные/
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52 'Рабочий стол'/
+drwxr-xr-x  2 myshasolin myshasolin 4096 дек 14 18:52  Шаблоны/
+myshasolin@myshasolin-VirtualBox:~$ sudo apt update
+[sudo] пароль для myshasolin: 
+Сущ:1 http://ru.archive.ubuntu.com/ubuntu focal InRelease
+Сущ:2 http://ru.archive.ubuntu.com/ubuntu focal-updates InRelease
+Сущ:3 http://ru.archive.ubuntu.com/ubuntu focal-backports InRelease            
+Сущ:4 http://security.ubuntu.com/ubuntu focal-security InRelease               
+Чтение списков пакетов… Готово            
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Все пакеты имеют последние версии.
+myshasolin@myshasolin-VirtualBox:~$ 
