@@ -1,0 +1,216 @@
+1. Управление пользователями:
+a) создать нового пользователя;
+b) убедиться, что информация о нем появилась в соответствующих файлах в системе;
+c) удалить созданного пользователя;
+
+2. Управление группами:
+a) создать группу;
+b) попрактиковаться в смене групп у пользователей;
+c) добавить пользователя в группу, не меняя основной;
+d) удалить пользователя из группы.
+
+3. Создать пользователя с правами суперпользователя. Проверить результат.
+4. * Используя дополнительные материалы, выдать одному из созданных пользователей право на выполнение ряда команд, требующих прав суперпользователя (команды выбираем на своё усмотрение).
+
+
+
+
+1.  Управление пользователями
+--------------- 
+Создаю пользователя user1, задаю ему пароль, захожу в него, смотрю в списке его домашний каталог (появился), потом удаляю пользователя. Проверяю в /etc/passwd - пользователя user1 нет
+---------------
+
+myshasolin@myshasolin-VB:~$ sudo useradd -s /bin/bash -m -d /home/user1 user1
+[sudo] пароль для myshasolin: 
+myshasolin@myshasolin-VB:~$ sudo passwd user1
+Новый пароль : 
+Повторите ввод нового пароля : 
+passwd: пароль успешно обновлён
+myshasolin@myshasolin-VB:~$ whoami
+myshasolin
+myshasolin@myshasolin-VB:~$ su user1
+Пароль: 
+user1@myshasolin-VB:/home/myshasolin$ whoami
+user1
+user1@myshasolin-VB:/home/myshasolin$ ls ..
+myshasolin  user1
+user1@myshasolin-VB:/home/myshasolin$ exit
+exit
+myshasolin@myshasolin-VB:~$ whoami
+myshasolin
+myshasolin@myshasolin-VB:~$ sudo userdel -r user1
+userdel: почтовый ящик user1 (/var/mail/user1) не найден
+myshasolin@myshasolin-VB:~$ tail -5 /etc/passwd
+sssd:x:126:131:SSSD system user,,,:/var/lib/sss:/usr/sbin/nologin
+myshasolin:x:1000:1000:myshasolin,,,:/home/myshasolin:/bin/bash
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+vboxadd:x:998:1::/var/run/vboxadd:/bin/false
+sshd:x:127:65534::/run/sshd:/usr/sbin/nologin
+myshasolin@myshasolin-VB:~$ 
+
+
+2.  Управление группами
+---------------
+Создаю двух пользователей (user1 и user2), создаю группу gr1, добавляю user1 в эту группу, а для user2 принудительно назначаю gr1 первичной группой (что видно в изменениях файла /etc/passwd, была первичной группа 1003, а станет 1001). 
+Потом удаляю пользователей из группы (user1 просто, а для user2 обратно переназначаю первичную) и удаляю группу gr1
+---------------
+
+myshasolin@myshasolin-VB:~$ sudo groupadd gr1
+myshasolin@myshasolin-VB:~$ tail -5 /etc/group
+myshasolin:x:1000:
+sambashare:x:133:myshasolin
+systemd-coredump:x:999:
+vboxsf:x:998:
+gr1:x:1001:
+
+myshasolin@myshasolin-VB:~$ sudo useradd -s /bin/bash -m -d /home/user1 user1
+myshasolin@myshasolin-VB:~$ sudo passwd user1
+Новый пароль : 
+Повторите ввод нового пароля : 
+passwd: пароль успешно обновлён
+myshasolin@myshasolin-VB:~$ sudo useradd -s /bin/bash -m -d /home/user2 user2
+myshasolin@myshasolin-VB:~$ sudo passwd user2
+Новый пароль : 
+Повторите ввод нового пароля : 
+passwd: пароль успешно обновлён
+myshasolin@myshasolin-VB:~$ tail -5 /etc/passwd
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+vboxadd:x:998:1::/var/run/vboxadd:/bin/false
+sshd:x:127:65534::/run/sshd:/usr/sbin/nologin
+user1:x:1001:1002::/home/user1:/bin/bash
+user2:x:1002:1003::/home/user2:/bin/bash
+
+myshasolin@myshasolin-VB:~$ sudo usermod -aG gr1 user1
+myshasolin@myshasolin-VB:~$ sudo usermod -g gr1 user2
+myshasolin@myshasolin-VB:~$ tail -5 /etc/group
+systemd-coredump:x:999:
+vboxsf:x:998:
+gr1:x:1001:user1
+user1:x:1002:
+user2:x:1003:
+myshasolin@myshasolin-VB:~$ tail -5 /etc/passwd
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+vboxadd:x:998:1::/var/run/vboxadd:/bin/false
+sshd:x:127:65534::/run/sshd:/usr/sbin/nologin
+user1:x:1001:1002::/home/user1:/bin/bash
+user2:x:1002:1001::/home/user2:/bin/bash
+
+myshasolin@myshasolin-VB:~$ sudo deluser user1 gr1
+Удаляется пользователь «user1» из группы «gr1» ...
+Готово.
+myshasolin@myshasolin-VB:~$ sudo usermod -g user2 user2
+
+myshasolin@myshasolin-VB:~$ sudo groupdel gr1
+myshasolin@myshasolin-VB:~$ tail -5 /etc/group
+sambashare:x:133:myshasolin
+systemd-coredump:x:999:
+vboxsf:x:998:
+user1:x:1002:
+user2:x:1003:
+
+
+3.  Создать пользователя с правами суперпользователя. Проверить результат
+---------------
+Сначала user1 обычный пользователь и не может обновляться, потом вуаля - он суперпользователь и успешно обновляет систему. После обновления отбираем у него root-права, ибо хватит
+---------------
+
+myshasolin@myshasolin-VB:~$ su user1
+Пароль: 
+user1@myshasolin-VB:/home/myshasolin$ sudo apt update
+[sudo] пароль для user1: 
+user1 отсутствует в файле sudoers. Данное действие будет занесено в журнал.
+user1@myshasolin-VB:/home/myshasolin$ exit
+exit
+myshasolin@myshasolin-VB:~$ sudo usermod -aG sudo user1
+myshasolin@myshasolin-VB:~$ su user1
+Пароль: 
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+user1@myshasolin-VB:/home/myshasolin$ sudo apt update
+[sudo] пароль для user1: 
+Сущ:1 http://ru.archive.ubuntu.com/ubuntu focal InRelease
+Пол:2 http://ru.archive.ubuntu.com/ubuntu focal-updates InRelease [114 kB]
+Пол:3 http://ru.archive.ubuntu.com/ubuntu focal-backports InRelease [108 kB]                     
+Пол:4 http://security.ubuntu.com/ubuntu focal-security InRelease [114 kB]  
+Пол:5 http://ru.archive.ubuntu.com/ubuntu focal-updates/main amd64 DEP-11 Metadata [277 kB]
+Пол:6 http://ru.archive.ubuntu.com/ubuntu focal-updates/universe amd64 DEP-11 Metadata [363 kB]
+Пол:7 http://ru.archive.ubuntu.com/ubuntu focal-updates/multiverse amd64 DEP-11 Metadata [944 B]
+Пол:8 http://ru.archive.ubuntu.com/ubuntu focal-backports/main amd64 DEP-11 Metadata [7 992 B]
+Пол:9 http://ru.archive.ubuntu.com/ubuntu focal-backports/universe amd64 DEP-11 Metadata [11,3 kB]
+Получено 997 kB за 1с (1 375 kB/s) 
+Чтение списков пакетов… Готово
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Все пакеты имеют последние версии.
+user1@myshasolin-VB:/home/myshasolin$ exit
+exit
+
+myshasolin@myshasolin-VB:~$ sudo deluser user1 sudo
+Удаляется пользователь «user1» из группы «sudo» ...
+Готово.
+
+
+4. * Используя дополнительные материалы, выдать одному из созданных пользователей право на выполнение ряда команд, требующих прав суперпользователя (команды выбираем на своё усмотрение).
+---------------
+Теперь user2 попробует удалить user1 - не получится. Дадим ему на это права через редактирование файла /etc/sudoers и user2 сможет удалить user1. А вот обновиться попробует - не выйдет, т.к. прав на это у него не будет, ишь чего захотел
+---------------
+
+myshasolin@myshasolin-VB:~$ su user2
+Пароль: 
+user2@myshasolin-VB:/home/myshasolin$ whoami
+user2
+user2@myshasolin-VB:/home/myshasolin$ sudo deluser user1
+[sudo] пароль для user2: 
+user2 отсутствует в файле sudoers. Данное действие будет занесено в журнал.
+user2@myshasolin-VB:/home/myshasolin$ exit
+exit
+
+myshasolin@myshasolin-VB:~$ which userdel
+/usr/sbin/userdel
+myshasolin@myshasolin-VB:~$ sudo visudo
+
+--------------- 
+Добавляем  в файле /etc/sudoers внизу строчку с правами для user2, созраняемся и выходим из файла:
+---------------
+
+#includedir /etc/sudoers.d
+
+user2 ALL=/usr/sbin/userdel
+
+---------------
+Теперь user2 удалит user1 (получится, user1 пропадёт из списка в файле /etc/passwd) и попробует обновиться (не получится, система его отругает)
+---------------
+
+myshasolin@myshasolin-VB:~$ su user2
+Пароль: 
+user2@myshasolin-VB:/home/myshasolin$ sudo userdel -r user1
+userdel: почтовый ящик user1 (/var/mail/user1) не найден
+
+user2@myshasolin-VB:/home/myshasolin$ tail -5 /etc/passwd
+myshasolin:x:1000:1000:myshasolin,,,:/home/myshasolin:/bin/bash
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+vboxadd:x:998:1::/var/run/vboxadd:/bin/false
+sshd:x:127:65534::/run/sshd:/usr/sbin/nologin
+user2:x:1002:1003::/home/user2:/bin/bash
+
+user2@myshasolin-VB:/home/myshasolin$ sudo apt update
+Пользователю user2 запрещено выполнять '/usr/bin/apt update' с правами root на myshasolin-VB.
+
+user2@myshasolin-VB:/home/myshasolin$ exit
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
