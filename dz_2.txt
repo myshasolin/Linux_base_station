@@ -1,0 +1,51 @@
+Создать каталоги students и mentors в домашней директории, а в них — текстовые файлы students_list.txt и mentors_list.txt соответственно.
+Открыть созданные в п.1 файлы в любом текстовом редакторе и заполнить их (в соответствии с названием) списком Ваших одногруппников и наставников на данном потоке.
+Переместите файл mentors_list.txt в папку students.
+Удалите папку mentors.
+Переименуйте папку students в students_and_mentors.
+Удалите папку students_and_mentors вместе с содержимым.
+Подключитесь к машине с Linux по протоколу SSH.
+(*) Используя дополнительный материал, настроить авторизацию по SSH с использованием ключей.
+
+
+
+сгенерировал ключи в PuTTYgen, записал приватный ключ в authorized_keys на сервере Linux, теперь авторизуюсь по SSH с Windows через PuTTY без пароля
+в нём и выполнял дз
+
+##################
+
+Using username "myshasolin".
+Authenticating with public key "rsa-key-20211220" from agent
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.11.0-43-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+0 updates can be applied immediately.
+
+Your Hardware Enablement Stack (HWE) is supported until April 2025.
+Last login: Mon Dec 20 03:15:05 2021 from 192.168.1.69
+myshasolin@myshasolin-VB:~$ mkdir students mentors
+myshasolin@myshasolin-VB:~$ vim students/students_list.txt
+myshasolin@myshasolin-VB:~$ head students/students_list.txt
+Евгений Лавренко
+Сергей Пелесков
+Ричард Эрлих
+Артём Ломакин
+Сергей Назаркин
+Alexey Kuimov
+Александр Курганский
+Мария Козлова
+Алексей Дубровский
+Денис Сазонов
+myshasolin@myshasolin-VB:~$ vim mentors/mentors_list.txt
+myshasolin@myshasolin-VB:~$ head mentors/mentors_list.txt
+преподаватель - Кирилл Иванов
+наставник - Наталия Солина
+myshasolin@myshasolin-VB:~$ mv mentors/mentors_list.txt students/
+myshasolin@myshasolin-VB:~$ rm mentors -r
+myshasolin@myshasolin-VB:~$ mv students students_and_mentors
+myshasolin@myshasolin-VB:~$ rm students_and_mentors -r
+myshasolin@myshasolin-VB:~$ 
+
