@@ -1,0 +1,173 @@
+# 1. Потоки ввода/вывода. Создать файл, используя команду echo. Используя команду cat, прочитать содержимое всех файлов каталога etc, ошибки перенаправить в отдельный файл.
+
+# создаю файл "file_1" с содержимым "tratata trutata":
+
+myshasolin@myshasolin-VB:~/dz/dz_4$ echo tratata trutata > file_1
+myshasolin@myshasolin-VB:~/dz/dz_4$ more file_1 
+tratata trutata
+
+# читаю содержимое всех файлов каталога etc (бешеная пелёнка), а ошибки отправляю в файл "errors.txt":
+myshasolin@myshasolin-VB:~/dz/dz_4$ cat /etc/* 2>errors.txt
+
+# или так - оба потока отправляю каждый в свой файл. Командой ls проверяю - файлы на месте:
+myshasolin@myshasolin-VB:~/dz/dz_4$ cat /etc/* 1>cat_reed.txt 2>errors.txt
+myshasolin@myshasolin-VB:~/dz/dz_4$ ls
+cat_reed.txt  errors.txt  file_1
+
+
+
+
+
+# 2. Конвейер (pipeline). Использовать команду cut на вывод длинного списка каталога, чтобы отобразить только права доступа к файлам. Затем отправить в конвейере этот вывод на sort и uniq, чтобы отфильтровать все повторяющиеся строки.
+
+# пришлось немного погуглить, так как cut, sort и uniq не было на занятии. Но от этого даже интереснее)) надеюсь, всё правильно:
+myshasolin@myshasolin-VB:~/dz/dz_4$ ll ~ | cut -c -10 | sort | uniq
+drwx------
+drwxrwxr-x
+drwxr-xr-x
+-rw-------
+-rw-r-----
+-rw-r--r--
+итого
+
+
+
+
+# 3. Управление процессами.) Изменить конфигурационный файл службы SSH: /etc/ssh/sshd_config, отключив аутентификацию по паролю PasswordAuthentication no. Выполните рестарт службы systemctl restart sshd (service sshd restart), верните аутентификацию по паролю, выполните reload службы systemctl reload sshd (services sshd reload). В чём различие между действиями restart и reload? 
+
+# захожу через nano в файл под рут-правами и редактирую строчку PasswordAuthentication с "yes" на "no", сохраняю изменения, выхожу из nano:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo nano /etc/ssh/ssh_config
+[sudo] пароль для myshasolin:
+
+# проверяю статус SSH, PID у службы 776:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo systemctl status ssh
+● ssh.service - OpenBSD Secure Shell server
+     Loaded: loaded (/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2022-01-13 01:04:07 MSK; 1h 56min ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+    Process: 761 ExecStartPre=/usr/sbin/sshd -t (code=exited, status=0/SUCCESS)
+   Main PID: 776 (sshd)
+      Tasks: 1 (limit: 4637)
+     Memory: 2.3M
+     CGroup: /system.slice/ssh.service
+             └─776 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+янв 13 01:04:07 myshasolin-VB systemd[1]: Starting OpenBSD Secure Shell server...
+янв 13 01:04:07 myshasolin-VB sshd[776]: Server listening on 0.0.0.0 port 22.
+янв 13 01:04:07 myshasolin-VB sshd[776]: Server listening on :: port 22.
+янв 13 01:04:07 myshasolin-VB systemd[1]: Started OpenBSD Secure Shell server.
+
+# делаю restart ssh:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo systemctl restart sshd
+
+# ещё раз проверяю статус SSH, PID после restart поменялся - теперь он 4597:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo systemctl status sshd
+● ssh.service - OpenBSD Secure Shell server
+     Loaded: loaded (/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2022-01-13 03:01:43 MSK; 26s ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+    Process: 4596 ExecStartPre=/usr/sbin/sshd -t (code=exited, status=0/SUCCESS)
+   Main PID: 4597 (sshd)
+      Tasks: 1 (limit: 4637)
+     Memory: 1.0M
+     CGroup: /system.slice/ssh.service
+             └─4597 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+янв 13 03:01:43 myshasolin-VB systemd[1]: Starting OpenBSD Secure Shell server...
+янв 13 03:01:43 myshasolin-VB sshd[4597]: Server listening on 0.0.0.0 port 22.
+янв 13 03:01:43 myshasolin-VB sshd[4597]: Server listening on :: port 22.
+янв 13 03:01:43 myshasolin-VB systemd[1]: Started OpenBSD Secure Shell server.
+
+# возвращаю в "ssh_config" всё как было - редактирую строчку PasswordAuthentication с "no" на "yes", сохраняюсь, выхожу:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo nano /etc/ssh/ssh_config
+
+# и снова проверяю статус SSH - PID 4597:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo systemctl status ssh
+● ssh.service - OpenBSD Secure Shell server
+     Loaded: loaded (/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2022-01-13 03:01:43 MSK; 1min 53s ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+    Process: 4596 ExecStartPre=/usr/sbin/sshd -t (code=exited, status=0/SUCCESS)
+   Main PID: 4597 (sshd)
+      Tasks: 1 (limit: 4637)
+     Memory: 1.0M
+     CGroup: /system.slice/ssh.service
+             └─4597 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+янв 13 03:01:43 myshasolin-VB systemd[1]: Starting OpenBSD Secure Shell server...
+янв 13 03:01:43 myshasolin-VB sshd[4597]: Server listening on 0.0.0.0 port 22.
+янв 13 03:01:43 myshasolin-VB sshd[4597]: Server listening on :: port 22.
+янв 13 03:01:43 myshasolin-VB systemd[1]: Started OpenBSD Secure Shell server.
+
+# делаю reolad:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo systemctl reload sshd
+
+# ещё раз смотрим status SSH - PID на месте, он остался 4597:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo systemctl status sshd
+● ssh.service - OpenBSD Secure Shell server
+     Loaded: loaded (/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2022-01-13 03:01:43 MSK; 2min 24s ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+    Process: 4596 ExecStartPre=/usr/sbin/sshd -t (code=exited, status=0/SUCCESS)
+    Process: 4615 ExecReload=/usr/sbin/sshd -t (code=exited, status=0/SUCCESS)
+    Process: 4616 ExecReload=/bin/kill -HUP $MAINPID (code=exited, status=0/SUCCESS)
+   Main PID: 4597 (sshd)
+      Tasks: 1 (limit: 4637)
+     Memory: 1.0M
+     CGroup: /system.slice/ssh.service
+             └─4597 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+янв 13 03:01:43 myshasolin-VB systemd[1]: Starting OpenBSD Secure Shell server...
+янв 13 03:01:43 myshasolin-VB sshd[4597]: Server listening on 0.0.0.0 port 22.
+янв 13 03:01:43 myshasolin-VB sshd[4597]: Server listening on :: port 22.
+янв 13 03:01:43 myshasolin-VB systemd[1]: Started OpenBSD Secure Shell server.
+янв 13 03:04:01 myshasolin-VB systemd[1]: Reloading OpenBSD Secure Shell server.
+янв 13 03:04:01 myshasolin-VB sshd[4597]: Received SIGHUP; restarting.
+янв 13 03:04:01 myshasolin-VB systemd[1]: Reloaded OpenBSD Secure Shell server.
+янв 13 03:04:01 myshasolin-VB sshd[4597]: Server listening on 0.0.0.0 port 22.
+янв 13 03:04:01 myshasolin-VB sshd[4597]: Server listening on :: port 22.
+
+# ==> в этом и отличие между restart и reolad. Детальней:
+# - restart: останавливается процесс -> перечитывается файл конфигурации -> запускается процесс заново и PID при этом у процесса меняется
+# - reload: при reload читается файл конфигурации и применяется в тот же самый процесс, т.е. процесс не останавливается, поэтому и PID у него не меняется
+
+
+# Создайте файл при помощи команды cat > file_name, напишите текст и завершите комбинацией ctrl+d. Какой сигнал передадим процессу?
+myshasolin@myshasolin-VB:~/dz$ cat > dz_4/file_cat
+ути
+пути
+тирлипути
+myshasolin@myshasolin-VB:~/dz$ more dz_4/file_cat 
+ути
+пути
+тирлипути
+
+
+
+
+# 4. Сигналы процессам. Запустите mc. Используя ps, найдите PID процесса, завершите процесс, передав ему сигнал 9.
+
+# для примера у меня есть отдельный пользватель - testuser, захожу под ним и запускаю mc:
+myshasolin@myshasolin-VB:~/dz/dz_4$ su testuser
+Пароль: 
+testuser@myshasolin-VB:/home/myshasolin/dz/dz_4$ whoami
+testuser
+
+# а под собой ищу запущенный mc с помощью перенаправления ps aux в grep:
+myshasolin@myshasolin-VB:~/dz/dz_4$ ps -aux | grep mc
+testuser    4711  0.0  0.2  31156  8932 pts/1    S+   03:13   0:00 mc
+myshaso+    4722  0.0  0.0  17564   724 pts/0    S+   03:13   0:00 grep --color=auto mc
+
+# нахожу и убиваю процесс с сигналом 9:
+myshasolin@myshasolin-VB:~/dz/dz_4$ sudo kill -s 9 4711
+
+# ещё раз проверяю - процесса больше нет:
+myshasolin@myshasolin-VB:~/dz/dz_4$ ps -aux | grep mc
+myshaso+    4729  0.0  0.0  17564   660 pts/0    S+   03:14   0:00 grep --color=auto mc
+
+# готово. У пользователя testuser появилось такое грустное сообшение:
+testuser@myshasolin-VB:/home/myshasolin/dz/dz_4$ Убито
+
+
+
+
