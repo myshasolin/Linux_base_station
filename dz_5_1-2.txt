@@ -1,0 +1,92 @@
+	# 1. Создать файл file1 и наполнить его произвольным содержимым. Скопировать его в file2. 
+	# Создать символическую ссылку file3 на file1. Создать жёсткую ссылку file4 на file1. Посмотреть, какие inode у файлов. Удалить file1. 
+	# Что стало с остальными созданными файлами? Попробовать вывести их на экран.
+
+	# создадим файлы и ссылки:
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ echo произвольное содержимое > file1
+myshasolin@myshasolin-VB:~/dz/dz_5$ cp file1 file2
+myshasolin@myshasolin-VB:~/dz/dz_5$ ln -s file1 file3
+myshasolin@myshasolin-VB:~/dz/dz_5$ ln file1 file4
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll -i
+итого 20
+1073594 drwxrw-r-- 2 myshasolin myshasolin 4096 янв 16 22:46 ./
+1051738 drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 19:24 ../
+1051761 -rw-rw-r-- 2 myshasolin myshasolin   46 янв 16 22:43 file1
+1073487 -rw-rw-r-- 1 myshasolin myshasolin   46 янв 16 22:44 file2
+1073593 lrwxrwxrwx 1 myshasolin myshasolin    5 янв 16 22:45 file3 -> file1
+1051761 -rw-rw-r-- 2 myshasolin myshasolin   46 янв 16 22:43 file4
+
+	# inode у file1 и file4 совпадают, т.к. жесткая ссылка, как и оригинал смотрит на inode, а не на название. У них и счётчик ссылок показывает 2 шт.
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ rm file1
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll
+итого 16
+drwxrw-r-- 2 myshasolin myshasolin 4096 янв 16 22:51 ./
+drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 19:24 ../
+-rw-rw-r-- 1 myshasolin myshasolin   46 янв 16 22:44 file2
+lrwxrwxrwx 1 myshasolin myshasolin    5 янв 16 22:45 file3 -> file1
+-rw-rw-r-- 1 myshasolin myshasolin   46 янв 16 22:43 file4
+
+	# мягкая ссылка сломалась и покраснела. Прочитаем последовательно все оставшиеся файлы
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat file2
+произвольное содержимое
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat file3
+cat: file3: Нет такого файла или каталога
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat file4
+произвольное содержимое
+
+	# file2 - копия, читается
+	# file3 - мягкая ссылка, сломалась
+	# file2 - жесткая ссылка, читается
+
+
+
+	# 2. Дать созданным файлам другие, произвольные имена. Создать новую символическую ссылку. 
+	# Переместить ссылки в другую директорию.
+
+	# удалим битую мягкую ссылку и переименуем оставшиеся 2 файла
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ rm file3
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll
+итого 16
+drwxrw-r-- 2 myshasolin myshasolin 4096 янв 16 23:31 ./
+drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 19:24 ../
+-rw-rw-r-- 1 myshasolin myshasolin   46 янв 16 22:44 file2
+-rw-rw-r-- 1 myshasolin myshasolin   46 янв 16 22:43 file4
+myshasolin@myshasolin-VB:~/dz/dz_5$ rename 's/file/my_file/' file2 file4
+myshasolin@myshasolin-VB:~/dz/dz_5$ ls
+my_file2  my_file4
+
+	# посмотрим полный путь до файла my_file2 и создадим ему символическую ссылку (ну и жесткую ещё, почему бы и нет)
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ realpath my_file2
+/home/myshasolin/dz/dz_5/my_file2
+myshasolin@myshasolin-VB:~/dz/dz_5$ ln -s /home/myshasolin/dz/dz_5/my_file2 new_link
+myshasolin@myshasolin-VB:~/dz/dz_5$ ln /home/myshasolin/dz/dz_5/my_file2 new_hard_link
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll -i
+итого 20
+1073594 drwxrw-r-- 2 myshasolin myshasolin 4096 янв 16 23:50 ./
+1051738 drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 19:24 ../
+1073487 -rw-rw-r-- 2 myshasolin myshasolin   46 янв 16 22:44 my_file2
+1051761 -rw-rw-r-- 1 myshasolin myshasolin   46 янв 16 22:43 my_file4
+1073487 -rw-rw-r-- 2 myshasolin myshasolin   46 янв 16 22:44 new_hard_link
+1073600 lrwxrwxrwx 1 myshasolin myshasolin   33 янв 16 23:46 new_link -> /home/myshasolin/dz/dz_5/my_file2
+
+	# переместим ссылки в другую директория - я забросил их в директорую прошлого дз
+
+mv new_hard_link new_link ../dz_4
+myshasolin@myshasolin-VB:~/dz/dz_5$ ls ../dz_4
+cat_reed.txt  errors.txt  file_1  file_cat  new_hard_link  new_link
+myshasolin@myshasolin-VB:~/dz/dz_5$ ls
+my_file2  my_file4
+
+	# прочитаем ссылки из их нового расположения, они там одни такие с new в названии, поэтому:
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat ../dz_4/new*
+произвольное содержимое
+произвольное содержимое
+
+

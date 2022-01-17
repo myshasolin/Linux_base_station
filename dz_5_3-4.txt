@@ -1,0 +1,142 @@
+	# 3. Создать два произвольных файла. Первому присвоить права на чтение и запись для владельца 
+	# и группы, только на чтение — для всех. Второму присвоить права на чтение и запись только для владельца
+
+	# создаём файлы, присваиваем права (буквами и цифрами), смотрим что получилось:
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ touch arbitrary_file_1 arbitrary_file_2
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ chmod u+rw,g+rw,o+r arbitrary_file_1
+myshasolin@myshasolin-VB:~/dz/dz_5$ chmod 600 arbitrary_file_2
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll
+итого 8
+drwxrw-r-- 2 myshasolin myshasolin 4096 янв 17 00:08 ./
+drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 23:52 ../
+-rw-rw-r-- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_1
+-rw------- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_2
+
+
+
+
+
+	# 4. * Создать группу developer и нескольких пользователей, входящих в неё. Создать директорию для совместной работы. 
+	# Сделать так, чтобы созданные одними пользователями файлы могли изменять другие пользователи этой группы.
+
+	# создадим двух пользователей
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ sudo useradd -s /bin/bash -md /home/user1 user1
+[sudo] пароль для myshasolin: 
+myshasolin@myshasolin-VB:~/dz/dz_5$ sudo passwd user1
+Новый пароль : 
+Повторите ввод нового пароля : 
+passwd: пароль успешно обновлён
+myshasolin@myshasolin-VB:~/dz/dz_5$ sudo useradd -s /bin/bash -md /home/user2 user2
+myshasolin@myshasolin-VB:~/dz/dz_5$ sudo passwd user2
+Новый пароль : 
+Повторите ввод нового пароля : 
+passwd: пароль успешно обновлён
+
+	# а теперь создадим группу developer и новый пользователей отправим туда
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ tail /etc/group
+sssd:x:131:
+lxd:x:132:myshasolin
+myshasolin:x:1000:
+sambashare:x:133:myshasolin
+systemd-coredump:x:999:
+vboxsf:x:998:
+testuser:x:1001:
+user1:x:1002:
+user2:x:1003:
+developer:x:1004:user1,user2
+
+	# создадим группу, проверим у неё группу пользователей и поменяем её
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ mkdir working_directory
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll
+итого 12
+drwxrw-r-- 3 myshasolin myshasolin 4096 янв 17 00:36 ./
+drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 23:52 ../
+-rw-rw-r-- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_1
+-rw------- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_2
+drwxrwxr-x 2 myshasolin myshasolin 4096 янв 17 00:36 working_directory/
+myshasolin@myshasolin-VB:~/dz/dz_5$ sudo chown :developer working_directory/
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll
+итого 12
+drwxrw-r-- 3 myshasolin myshasolin 4096 янв 17 00:36 ./
+drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 23:52 ../
+-rw-rw-r-- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_1
+-rw------- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_2
+drwxrwxr-x 2 myshasolin developer  4096 янв 17 00:36 working_directory/
+
+	# перейдём в рабочий каталог. Один пользователь создаст файл, второй отредактирует, и наоборот
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ cd working_directory/
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ sudo chmod g+s -R .
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ su user1
+Пароль: 
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ whoami
+user1
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ cat > file_user1.txt
+трампампам 
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ ll
+итого 12
+drwxrwsr-x 2 myshasolin developer  4096 янв 17 01:03 ./
+drwxrw-r-- 3 myshasolin myshasolin 4096 янв 17 00:36 ../
+-rw-rw-r-- 1 user1      developer    21 янв 17 01:03 file_user1.txt
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ exit
+exit
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ su user2
+Пароль: 
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ whoami 
+user2
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ cat >> file_user1.txt 
+пум пурум
+пурум пум пум!
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ more file_user1.txt 
+трампампам
+пум пурум
+пурум пум пум!
+
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ cat > file_user2.txt 
+второй файл
+от второго пользователя
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ exit
+exit
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ su user1
+Пароль:
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ whoami
+user1
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ cat >> file_user2.txt 
+дополнен первым
+пользователем
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory$ exit
+exit
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ whoami
+myshasolin
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ more file_user2.txt 
+второй файл
+от второго пользователя
+дополнен первым
+пользователем
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ ll
+итого 16
+drwxrwsr-x 2 myshasolin developer  4096 янв 17 01:10 ./
+drwxrw-r-- 3 myshasolin myshasolin 4096 янв 17 00:36 ../
+-rw-rw-r-- 1 user1      developer    65 янв 17 01:08 file_user1.txt
+-rw-rw-r-- 1 user2      developer   124 янв 17 01:11 file_user2.txt
+
+
+
+
+
+
+
+
+
+
+
+

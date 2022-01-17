@@ -1,0 +1,134 @@
+	# 5. * Создать в директории для совместной работы поддиректорию для обмена файлами, 
+	# но чтобы удалять файлы могли только их создатели.
+
+	# с прошлого задания у нас есть рабочая директория, создадим в ней поддиректорию, а в неё поднимем Sticky бит
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ mkdir for_file_sharing
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ ll
+итого 20
+drwxrwsr-x 3 myshasolin developer  4096 янв 17 01:26 ./
+drwxrw-r-- 3 myshasolin myshasolin 4096 янв 17 00:36 ../
+-rw-rw-r-- 1 user1      developer    65 янв 17 01:08 file_user1.txt
+-rw-rw-r-- 1 user2      developer   124 янв 17 01:11 file_user2.txt
+drwxrwsr-x 2 myshasolin developer  4096 янв 17 01:26 for_file_sharing/
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory$ cd for_file_sharing/
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ chmod +t .
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ ll
+итого 8
+drwxrwxr-t 2 myshasolin developer 4096 янв 17 01:26 ./
+drwxrwsr-x 3 myshasolin developer 4096 янв 17 01:26 ../
+
+	# перебросим ранее созданные файлы в эту папку
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ mv ../*.txt ../for_file_sharing/
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ ll
+итого 16
+drwxrwxr-t 2 myshasolin developer 4096 янв 17 01:36 ./
+drwxrwsr-x 3 myshasolin developer 4096 янв 17 01:36 ../
+-rw-rw-r-- 1 user1      developer   65 янв 17 01:08 file_user1.txt
+-rw-rw-r-- 1 user2      developer  124 янв 17 01:11 file_user2.txt
+
+	# зайдём под user1 и попробуем отредактировать файл пользователя user2 и не получится
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ su user1
+Пароль: 
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ whoami
+user1
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ cat >> file_user2.txt
+bash: file_user2.txt: Отказано в доступе
+user1@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ exit
+exit
+
+	# а теперь зайдём под user2 и попробуем отредактировать файл пользователя user1 и тоже не получится
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ su user2
+Пароль: 
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ whoami
+user2
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ cat >> file_user1.txt
+bash: file_user1.txt: Отказано в доступе
+
+	# попробуем удалить чужой файл, ничего-то у user2 не получится:
+
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ rm file_user1.txt
+rm: невозможно удалить 'file_user1.txt': Операция не позволена
+
+	# свой же файл отредактировать получается без проблем и чужой читается (не редактируется только)
+
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ cat >> file_user2.txt
+а свой файл очень даже редактируется, кратота
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ cat file_user1.txt
+трампампам
+пум пурум
+пурум пум пум!
+user2@myshasolin-VB:/home/myshasolin/dz/dz_5/working_directory/for_file_sharing$ exit
+exit
+
+	# читаю файл уже под myshasolin - добавленная строчка на месте
+
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ cat file_user2.txt
+второй файл
+от второго пользователя
+дополнен первым
+пользователем
+а свой файл очень даже редактируется, кратота
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$ ll
+итого 16
+drwxrwxr-t 2 myshasolin developer 4096 янв 17 01:36 ./
+drwxrwsr-x 3 myshasolin developer 4096 янв 17 01:36 ../
+-rw-rw-r-- 1 user1      developer   65 янв 17 01:08 file_user1.txt
+-rw-rw-r-- 1 user2      developer  208 янв 17 01:38 file_user2.txt
+myshasolin@myshasolin-VB:~/dz/dz_5/working_directory/for_file_sharing$
+
+
+
+
+
+	# 6. * Создать директорию, в которой есть несколько файлов. Сделать так, чтобы открыть файлы 
+	# можно было посмотреть, только зная имя файла, а через ls список файлов посмотреть было нельзя.
+
+	# создадим каталог и положим в него два файла. С помощью ls наши файлы видно
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ mkdir task_6
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat > task_6/one_file
+первый файл
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat > task_6/two_file
+файл второй
+myshasolin@myshasolin-VB:~/dz/dz_5$ ls task_6/
+one_file  two_file
+
+	# права у нас сейчас такие:
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll task_6/
+итого 16
+drwxrwxr-x 2 myshasolin myshasolin 4096 янв 17 01:56 ./
+drwxrw-r-- 4 myshasolin myshasolin 4096 янв 17 01:54 ../
+-rw-rw-r-- 1 myshasolin myshasolin   22 янв 17 01:56 one_file
+-rw-rw-r-- 1 myshasolin myshasolin   22 янв 17 01:57 two_file
+
+	# оставим всем права только на исполнение:
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ chmod a-rw,a+x task_6/
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll
+итого 16
+drwxrw-r-- 4 myshasolin myshasolin 4096 янв 17 01:54 ./
+drwxrw-r-t 4 myshasolin myshasolin 4096 янв 16 23:52 ../
+-rw-rw-r-- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_1
+-rw------- 1 myshasolin myshasolin    0 янв 17 00:08 arbitrary_file_2
+d--x--x--x 2 myshasolin myshasolin 4096 янв 17 01:56 task_6/
+drwxrwsr-x 3 myshasolin developer  4096 янв 17 01:36 working_directory/
+
+	# попробуем посмотреть список файлов в нашей папке, получим: 
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ ll task_6/
+ls: невозможно открыть каталог 'task_6/': Отказано в доступе
+
+	# а теперь попробуем прочитать наши файлы и всё получится, красота)):
+
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat task_6/one_file
+первый файл
+myshasolin@myshasolin-VB:~/dz/dz_5$ cat task_6/two_file
+файл второй 
+
+	# через nano тоже открываются, но с предупреждением о том, что [ Каталог «task_6» не доступен для записи ]
+
