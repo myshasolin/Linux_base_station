@@ -1,0 +1,23 @@
+myshasolin@myshasolin-VB:~$ sudo ufw status
+Состояние: неактивен
+
+myshasolin@myshasolin-VB:~$ sudo ufw allow 22
+Правила обновлены
+Правила обновлены (v6)
+
+myshasolin@myshasolin-VB:~$ sudo ufw allow 80
+Правила обновлены
+Правила обновлены (v6)
+
+myshasolin@myshasolin-VB:~$ sudo ufw enable
+Межсетевой экран включён и будет запускаться при запуске системы
+
+myshasolin@myshasolin-VB:~$ sudo ufw status
+Состояние: активен
+
+В                          Действие    Из
+-                          --------    --
+22                         ALLOW       Anywhere                  
+80                         ALLOW       Anywhere                  
+22 (v6)                    ALLOW       Anywhere (v6)             
+80 (v6)                    ALLOW       Anywhere (v6)

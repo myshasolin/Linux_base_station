@@ -1,0 +1,168 @@
+1. Подключить репозиторий с nginx любым удобным способом, установить nginx и потом удалить nginx, используя утилиту dpkg.
+
+		# Установите пакеты, необходимые для подключения apt-репозитория:
+
+myshasolin@myshasolin-VB:~$ sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring
+Чтение списков пакетов… Готово
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Уже установлен пакет lsb-release самой новой версии (11.1.0ubuntu2).
+lsb-release помечен как установленный вручную.
+Уже установлен пакет ca-certificates самой новой версии (20210119~20.04.2).
+Уже установлен пакет curl самой новой версии (7.68.0-1ubuntu2.7).
+Уже установлен пакет ubuntu-keyring самой новой версии (2020.02.11.4).
+ubuntu-keyring помечен как установленный вручную.
+Следующие пакеты устанавливались автоматически и больше не требуются:
+  chromium-codecs-ffmpeg-extra geoip-database gstreamer1.0-vaapi libgeoip1 libgstreamer-plugins-bad1.0-0 libnginx-mod-http-image-filter libnginx-mod-http-xslt-filter libnginx-mod-mail
+  libnginx-mod-stream libnginx-mod-stream-geoip libva-wayland2 nginx-common nginx-core
+Для их удаления используйте «sudo apt autoremove».
+Следующие НОВЫЕ пакеты будут установлены:
+  gnupg2
+Обновлено 0 пакетов, установлено 1 новых пакетов, для удаления отмечено 0 пакетов, и 0 пакетов не обновлено.
+Необходимо скачать 4 584 B архивов.
+После данной операции объём занятого дискового пространства возрастёт на 51,2 kB.
+Хотите продолжить? [Д/н] y
+Пол:1 http://ru.archive.ubuntu.com/ubuntu focal-updates/universe amd64 gnupg2 all 2.2.19-3ubuntu2.1 [4 584 B]
+Получено 4 584 B за 0с (60,3 kB/s)
+Выбор ранее не выбранного пакета gnupg2.
+(Чтение базы данных … на данный момент установлено 191602 файла и каталога.)
+Подготовка к распаковке …/gnupg2_2.2.19-3ubuntu2.1_all.deb …
+Распаковывается gnupg2 (2.2.19-3ubuntu2.1) …
+Настраивается пакет gnupg2 (2.2.19-3ubuntu2.1) …
+Обрабатываются триггеры для man-db (2.9.1-1) …
+
+		# Теперь нужно импортировать официальный ключ, используемый apt для проверки подлинности пакетов. Скачайте ключ:
+
+myshasolin@myshasolin-VB:~$ curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+>     | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1561  100  1561    0     0   6423      0 --:--:-- --:--:-- --:--:--  6423
+
+		# Проверьте, верный ли ключ был загружен:
+
+myshasolin@myshasolin-VB:~$ gpg --dry-run --quiet --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+pub   rsa2048 2011-08-19 [SC] [годен до: 2024-06-14]
+      573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+uid                      nginx signing key <signing-key@nginx.com>
+
+		# Для подключения apt-репозитория для стабильной версии nginx, выполните следующую команду:
+
+myshasolin@myshasolin-VB:~$ echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+> http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
+>     | sudo tee /etc/apt/sources.list.d/nginx.list
+deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu focal nginx
+
+		# Для использования пакетов из нашего репозитория вместо распространяемых в дистрибутиве, настройте закрепление:
+
+myshasolin@myshasolin-VB:~$ echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
+>     | sudo tee /etc/apt/preferences.d/99nginx
+Package: *
+Pin: origin nginx.org
+Pin: release o=nginx
+Pin-Priority: 900
+
+		# apt update
+
+myshasolin@myshasolin-VB:~$ sudo apt update
+Сущ:1 http://ru.archive.ubuntu.com/ubuntu focal InRelease
+Сущ:2 http://ru.archive.ubuntu.com/ubuntu focal-updates InRelease                                                          
+Сущ:3 http://ru.archive.ubuntu.com/ubuntu focal-backports InRelease                                                                                                
+Сущ:4 http://security.ubuntu.com/ubuntu focal-security InRelease                                                                                                   
+Сущ:5 http://ppa.launchpad.net/nginx/stable/ubuntu focal InRelease                
+Пол:6 http://nginx.org/packages/ubuntu focal InRelease [3 584 B]                  
+Пол:7 http://nginx.org/packages/ubuntu focal/nginx amd64 Packages [15,7 kB]
+Получено 19,3 kB за 1с (21,2 kB/s)  
+Чтение списков пакетов… Готово
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Все пакеты имеют последние версии.
+N: Пропускается получение настроенного файла «nginx/binary-i386/Packages», так как репозиторий «http://nginx.org/packages/ubuntu focal InRelease» не поддерживает архитектуру «i386»
+
+		# sudo apt install nginx
+
+myshasolin@myshasolin-VB:~$ sudo apt install nginx
+Чтение списков пакетов… Готово
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Следующие пакеты устанавливались автоматически и больше не требуются:
+  chromium-codecs-ffmpeg-extra geoip-database gstreamer1.0-vaapi libgeoip1 libgstreamer-plugins-bad1.0-0 libva-wayland2
+Для их удаления используйте «sudo apt autoremove».
+Следующие пакеты будут УДАЛЕНЫ:
+  libnginx-mod-http-image-filter libnginx-mod-http-xslt-filter libnginx-mod-mail libnginx-mod-stream libnginx-mod-stream-geoip nginx-common nginx-core
+Следующие НОВЫЕ пакеты будут установлены:
+  nginx
+Обновлено 0 пакетов, установлено 1 новых пакетов, для удаления отмечено 7 пакетов, и 0 пакетов не обновлено.
+Необходимо скачать 879 kB архивов.
+После данной операции объём занятого дискового пространства возрастёт на 927 kB.
+Хотите продолжить? [Д/н] y
+Пол:1 http://nginx.org/packages/ubuntu focal/nginx amd64 nginx amd64 1.20.2-1~focal [879 kB]
+Получено 879 kB за 0с (2 186 kB/s)
+(Чтение базы данных … на данный момент установлено 191608 файлов и каталогов.)
+Удаляется libnginx-mod-stream-geoip (1.18.0-3ubuntu1+focal2) …
+Удаляется libnginx-mod-http-image-filter (1.18.0-3ubuntu1+focal2) …
+Удаляется libnginx-mod-http-xslt-filter (1.18.0-3ubuntu1+focal2) …
+Удаляется libnginx-mod-mail (1.18.0-3ubuntu1+focal2) …
+Удаляется libnginx-mod-stream (1.18.0-3ubuntu1+focal2) …
+Удаляется nginx-core (1.18.0-3ubuntu1+focal2) …
+Удаляется nginx-common (1.18.0-3ubuntu1+focal2) …
+Выбор ранее не выбранного пакета nginx.
+(Чтение базы данных … на данный момент установлено 191554 файла и каталога.)
+Подготовка к распаковке …/nginx_1.20.2-1~focal_amd64.deb …
+----------------------------------------------------------------------
+
+Thanks for using nginx!
+
+Please find the official documentation for nginx here:
+* https://nginx.org/en/docs/
+
+Please subscribe to nginx-announce mailing list to get
+the most important news about nginx:
+* https://nginx.org/en/support.html
+
+Commercial subscriptions for nginx are available on:
+* https://nginx.com/products/
+
+----------------------------------------------------------------------
+Распаковывается nginx (1.20.2-1~focal) …
+Настраивается пакет nginx (1.20.2-1~focal) …
+Устанавливается новая версия файла настройки /etc/default/nginx …
+Устанавливается новая версия файла настройки /etc/init.d/nginx …
+Устанавливается новая версия файла настройки /etc/logrotate.d/nginx …
+Устанавливается новая версия файла настройки /etc/nginx/fastcgi_params …
+Устанавливается новая версия файла настройки /etc/nginx/mime.types …
+Устанавливается новая версия файла настройки /etc/nginx/nginx.conf …
+Обрабатываются триггеры для man-db (2.9.1-1) …
+Обрабатываются триггеры для systemd (245.4-4ubuntu3.15) …
+
+		# проверяем:
+
+myshasolin@myshasolin-VB:~$ dpkg -l nginx
+Желаемый=неизвестно[u]/установить[i]/удалить[r]/вычистить[p]/зафиксировать[h]
+| Состояние=не[n]/установлен[i]/настроен[c]/распакован[U]/частично настроен[F]/
+            частично установлен[H]/trig-aWait/Trig-pend
+|/ Ошибка?=(нет)/требуется переустановка[R] (верхний регистр
+в полях состояния и ошибки указывает на ненормальную ситуацию)
+||/ Имя            Версия         Архитектура  Описание
++++-==============-==============-============-=================================
+ii  nginx          1.20.2-1~focal amd64        high performance web server
+
+		# удаляем:
+
+myshasolin@myshasolin-VB:~$ sudo dpkg -r nginx
+(Чтение базы данных … на данный момент установлено 191578 файлов и каталогов.)
+Удаляется nginx (1.20.2-1~focal) …
+Обрабатываются триггеры для man-db (2.9.1-1) …
+myshasolin@myshasolin-VB:~$ sudo dpkg --purge nginx
+(Чтение базы данных … на данный момент установлено 191558 файлов и каталогов.)
+Вычищаются файлы настройки пакета nginx (1.20.2-1~focal) …
+Обрабатываются триггеры для systemd (245.4-4ubuntu3.15) …
+
+
+		# и ещё раз проверяем:
+
+myshasolin@myshasolin-VB:~$ dpkg -l nginx
+dpkg-query: шаблону nginx не соответствует ни один пакет
+
+myshasolin@myshasolin-VB:~$ sudo systemctl status nginx
+Unit nginx.service could not be found.

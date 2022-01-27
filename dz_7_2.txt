@@ -1,0 +1,45 @@
+2. Установить пакет на свой выбор, используя snap.
+
+			# добавим в жизнь музыки, установим спотифай. Сначала найдём его:
+
+myshasolin@myshasolin-VB:~$ snap find spotify
+Название       Версия                Издатель                Примечание  Описание
+spotify        1.1.72.439.gc253025e  spotify✓                -           Music for everyone
+spotify-qt     v3.8                  kraxarn                 -           Lightweight Spotify client using Qt
+spotifyd       0.2.3                 simonpersson            -           A spotify daemon
+spt-temp       v0.15.0-7-g3501ca9    spotify-tui             -           Spotify TUI
+tizonia        0.22.0                tizonia                 -           Cloud music from the Linux terminal
+musixmatch     3.6.1                 musixmatch              -           Musixmatch Desktop App
+magnesium      1.6.40                robblue2x               -           magnesium music player
+spt            0.25.0                popey                   -           Spotify TUI
+calaboka       1.1.5                 goodsoftworx            -           Ad silencer for Spotify
+spot           0.1.15                popey                   -           Gtk/Rust native Spotify client for the GNOME desktop.
+vsslagent      1.18                  vssl                    -           VSSL REST api.
+psst-gui       e6e3cfa               morrisong               -           Unofficial Spotify client with a fast native GUI
+music-radar    0+git.d12ccb7         keshavnrj               -           Music Recognition app for Linux Desktop
+violin-player  3.1.1                 foxish-mess             -           A fast, lightweight, and minimalistic desktop music player.
+olivia         1.1                   keshavnrj               -           Elegant Cloud Music Player for Linux Desktop
+iheartradio    1.4.0                 itzswirlz               -           Electron webapp for iHeartRadio
+lyricfier      0.4                   emilio-astarita         -           Lyrics search for Spotify app
+gemini         4.4.1                 kyleawayan              -           Gemini
+ncspot         0.9.0                 popey                   -           Cross-platform ncurses Spotify client written in Rust
+musik          0+git.1369097         open-webdesign-germany  -           MusiK
+librespot-dev  0+git.c38e977         keshavnrj               -           a headless Spotify Connect receiver
+
+			# ну а теперь поставим
+
+myshasolin@myshasolin-VB:~$ sudo snap install spotify 
+spotify 1.1.72.439.gc253025e от Spotify✓ установлен
+
+			# запускаем и наслаждаемся
+
+myshasolin@myshasolin-VB:~$ spotify 
+
+(spotify:11204): Gtk-WARNING **: 12:53:06.556: Theme parsing error: gtk.css:1428:23: 'font-feature-settings' is not a valid property name
+
+(spotify:11204): Gtk-WARNING **: 12:53:06.570: Theme parsing error: gtk.css:3318:25: 'font-feature-settings' is not a valid property name
+
+(spotify:11204): Gtk-WARNING **: 12:53:06.571: Theme parsing error: gtk.css:3780:23: 'font-feature-settings' is not a valid property name
+
+
+

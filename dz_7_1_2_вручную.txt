@@ -1,0 +1,106 @@
+1. Подключить репозиторий с nginx любым удобным способом, установить nginx и потом удалить nginx, используя утилиту dpkg.
+
+		# скачивае ключ:
+
+myshasolin@myshasolin-VB:~$ sudo wget https://nginx.org/keys/nginx_signing.key
+--2022-01-26 14:39:38--  https://nginx.org/keys/nginx_signing.key
+Распознаётся nginx.org (nginx.org)... 3.125.197.172, 52.58.199.22, 2a05:d014:edb:5704::6, ...
+Подключение к nginx.org (nginx.org)|3.125.197.172|:443... соединение установлено.
+HTTP-запрос отправлен. Ожидание ответа... 200 OK
+Длина: 1561 (1,5K) [application/octet-stream]
+Сохранение в каталог: ««nginx_signing.key»».
+
+nginx_signing.key                                  100%[===============================================================================================================>]   1,52K  --.-KB/s    за 0s      
+
+2022-01-26 14:39:38 (98,6 MB/s) - «nginx_signing.key» сохранён [1561/1561]
+
+		# добавим его в хранилище ключей:
+
+myshasolin@myshasolin-VB:~$ sudo apt-key add nginx_signing.key
+OK
+
+		# редактируем файл sources.list:
+
+myshasolin@myshasolin-VB:~$ sudo nano /etc/apt/sources.list
+
+		# в низ файла добавили 2 строчки: 
+
+myshasolin@myshasolin-VB:~$ tail -2 /etc/apt/sources.list
+deb https://nginx.org/packages/mainline/debian/ focal nginx
+deb-src https://nginx.org/packages/mainline/debian/ focal nginx
+
+		# теперь обновляемся:
+
+myshasolin@myshasolin-VB:~$ echo "deb http://nginx.org/packages/ubuntu focal nginx" > nginx.list
+myshasolin@myshasolin-VB:~$ curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+OK
+myshasolin@myshasolin-VB:~$ sudo apt update 
+Сущ:1 http://ru.archive.ubuntu.com/ubuntu focal InRelease
+Сущ:2 http://ru.archive.ubuntu.com/ubuntu focal-updates InRelease                                                          
+Сущ:3 http://ru.archive.ubuntu.com/ubuntu focal-backports InRelease                                                        
+Сущ:4 http://security.ubuntu.com/ubuntu focal-security InRelease                                                           
+Сущ:5 http://ppa.launchpad.net/nginx/stable/ubuntu focal InRelease                
+Чтение списков пакетов… Готово            
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Все пакеты имеют последние версии.
+myshasolin@myshasolin-VB:~$ sudo apt upgrade
+Чтение списков пакетов… Готово
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Расчёт обновлений… Готово
+Обновлено 0 пакетов, установлено 0 новых пакетов, для удаления отмечено 0 пакетов, и 0 пакетов не обновлено.
+
+		# ставим nginx:
+
+myshasolin@myshasolin-VB:~$ sudo apt install nginx -y
+Чтение списков пакетов… Готово
+Построение дерева зависимостей       
+Чтение информации о состоянии… Готово
+Следующие пакеты устанавливались автоматически и больше не требуются:
+  chromium-codecs-ffmpeg-extra gstreamer1.0-vaapi libgstreamer-plugins-bad1.0-0 libva-wayland2
+Для их удаления используйте «sudo apt autoremove».
+Следующие НОВЫЕ пакеты будут установлены:
+  nginx
+Обновлено 0 пакетов, установлено 1 новых пакетов, для удаления отмечено 0 пакетов, и 0 пакетов не обновлено.
+Необходимо скачать 35,6 kB архивов.
+После данной операции объём занятого дискового пространства возрастёт на 48,1 kB.
+Пол:1 http://ppa.launchpad.net/nginx/stable/ubuntu focal/main amd64 nginx all 1.18.0-3ubuntu1+focal2 [35,6 kB]
+Получено 35,6 kB за 0с (127 kB/s)
+Выбор ранее не выбранного пакета nginx.
+(Чтение базы данных … на данный момент установлено 191602 файла и каталога.)
+Подготовка к распаковке …/nginx_1.18.0-3ubuntu1+focal2_all.deb …
+Распаковывается nginx (1.18.0-3ubuntu1+focal2) …
+Настраивается пакет nginx (1.18.0-3ubuntu1+focal2) …
+
+		# смотрим через dpkg:
+
+myshasolin@myshasolin-VB:~$ dpkg -l nginx
+Желаемый=неизвестно[u]/установить[i]/удалить[r]/вычистить[p]/зафиксировать[h]
+| Состояние=не[n]/установлен[i]/настроен[c]/распакован[U]/частично настроен[F]/
+            частично установлен[H]/trig-aWait/Trig-pend
+|/ Ошибка?=(нет)/требуется переустановка[R] (верхний регистр
+в полях состояния и ошибки указывает на ненормальную ситуацию)
+||/ Имя            Версия                 Архитектура  Описание
++++-==============-======================-============-==========================================
+ii  nginx          1.18.0-3ubuntu1+focal2 all          small, powerful, scalable web/proxy server
+
+		# и с помощью dpkg удаляем:
+
+myshasolin@myshasolin-VB:~$ sudo dpkg -r nginx
+(Чтение базы данных … на данный момент установлено 191605 файлов и каталогов.)
+Удаляется nginx (1.18.0-3ubuntu1+focal2) …
+myshasolin@myshasolin-VB:~$ dpkg -l nginx
+Желаемый=неизвестно[u]/установить[i]/удалить[r]/вычистить[p]/зафиксировать[h]
+| Состояние=не[n]/установлен[i]/настроен[c]/распакован[U]/частично настроен[F]/
+            частично установлен[H]/trig-aWait/Trig-pend
+|/ Ошибка?=(нет)/требуется переустановка[R] (верхний регистр
+в полях состояния и ошибки указывает на ненормальную ситуацию)
+||/ Имя            Версия       Архитектура  Описание
++++-==============-============-============-=======================================
+un  nginx          <нет>        <нет>        (описание недоступно)
+
+
+
+
+

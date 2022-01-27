@@ -1,0 +1,116 @@
+3. Настроить iptables: разрешить подключения только на 22-й и 80-й порты.
+
+		# проверим список правил и убедимся, что ничего нет:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+
+		# меняем политику OUTPUT по умолчанию на DROP:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -P OUTPUT DROP
+
+		# ещё раз проверим список правил и убедимся, что политика по умолчанию для OUTPUT изменилась:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy DROP)
+target     prot opt source               destination
+
+		# всё как надо - INPUT работает (Spotify с прошлого задания вещает), a OUTPUT нет (просто так никуда зайти не получается)
+		# а теперь разрешим 22 и 80 порты
+
+myshasolin@myshasolin-VB:~$ sudo iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+myshasolin@myshasolin-VB:~$ sudo iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
+
+		# ну и ещё раз проверим нашу политику, чтоб убедиться, что подключения к 22 и 80 портам разрешены:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy DROP)
+target     prot opt source               destination         
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:http
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+
+		# при команде sudo iptables -F правило по умолчанию не исправилось на ACCEPT, поможет или перезагрузка или:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -F
+myshasolin@myshasolin-VB:~$ sudo iptables -P OUTPUT ACCEPT
+myshasolin@myshasolin-VB:~$ sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy DROP)
+target     prot opt source               destination
+
+
+--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--
+
+
+
+		# аналогичное решение, но с изменением политики для INPUT:
+		# проверяем:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination 
+
+		# устанавливаем:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -P INPUT DROP
+myshasolin@myshasolin-VB:~$ sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+myshasolin@myshasolin-VB:~$ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+		# убеждаемся, что все правила применились:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -L
+Chain INPUT (policy DROP)
+target     prot opt source               destination         
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:http
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+
+		# сносим правила и финально ещё раз проверяем:
+
+myshasolin@myshasolin-VB:~$ sudo iptables -F
+myshasolin@myshasolin-VB:~$ sudo iptables -P INPUT ACCEPT
+myshasolin@myshasolin-VB:~$ sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+
