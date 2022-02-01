@@ -1,0 +1,101 @@
+		# 3. Запустить контейнер с Ubuntu.
+		# поищем убунту
+
+myshasolin@myshasolin-VB:~$ docker search ubuntu
+NAME                                                      DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED
+ubuntu                                                    Ubuntu is a Debian-based Linux operating sys…   13626     [OK]       
+dorowu/ubuntu-desktop-lxde-vnc                            Docker image to provide HTML5 VNC interface …   605                  [OK]
+websphere-liberty                                         WebSphere Liberty multi-architecture images …   283       [OK]       
+rastasheep/ubuntu-sshd                                    Dockerized SSH service, built on top of offi…   256                  [OK]
+consol/ubuntu-xfce-vnc                                    Ubuntu container with "headless" VNC session…   244                  [OK]
+ubuntu-upstart                                            DEPRECATED, as is Upstart (find other proces…   112       [OK]       
+1and1internet/ubuntu-16-nginx-php-phpmyadmin-mysql-5      ubuntu-16-nginx-php-phpmyadmin-mysql-5          50                   [OK]
+open-liberty                                              Open Liberty multi-architecture images based…   50        [OK]       
+ubuntu-debootstrap                                        DEPRECATED; use "ubuntu" instead                45        [OK]       
+i386/ubuntu                                               Ubuntu is a Debian-based Linux operating sys…   28                   
+solita/ubuntu-systemd                                     Ubuntu + systemd                                24                   [OK]
+nuagebec/ubuntu                                           Simple always updated Ubuntu docker images w…   24                   [OK]
+1and1internet/ubuntu-16-apache-php-5.6                    ubuntu-16-apache-php-5.6                        14                   [OK]
+1and1internet/ubuntu-16-apache-php-7.0                    ubuntu-16-apache-php-7.0                        13                   [OK]
+1and1internet/ubuntu-16-nginx-php-phpmyadmin-mariadb-10   ubuntu-16-nginx-php-phpmyadmin-mariadb-10       11                   [OK]
+1and1internet/ubuntu-16-nginx-php-5.6-wordpress-4         ubuntu-16-nginx-php-5.6-wordpress-4             9                    [OK]
+1and1internet/ubuntu-16-apache-php-7.1                    ubuntu-16-apache-php-7.1                        7                    [OK]
+darksheer/ubuntu                                          Base Ubuntu Image -- Updated hourly             5                    [OK]
+1and1internet/ubuntu-16-nginx-php-7.0                     ubuntu-16-nginx-php-7.0                         4                    [OK]
+1and1internet/ubuntu-16-nginx-php-7.1-wordpress-4         ubuntu-16-nginx-php-7.1-wordpress-4             3                    [OK]
+owncloud/ubuntu                                           ownCloud Ubuntu base image                      3                    
+1and1internet/ubuntu-16-php-7.1                           ubuntu-16-php-7.1                               1                    [OK]
+smartentry/ubuntu                                         ubuntu with smartentry                          1                    [OK]
+1and1internet/ubuntu-16-sshd                              ubuntu-16-sshd                                  1                    [OK]
+1and1internet/ubuntu-16-rspec                             ubuntu-16-rspec                                 0                    [OK]
+
+		# скачаем образ:
+
+myshasolin@myshasolin-VB:~$ docker pull ubuntu:latest
+latest: Pulling from library/ubuntu
+Digest: sha256:b5a61709a9a44284d88fb12e5c48db0409cfad5b69d4ff8224077c57302df9cf
+Status: Image is up to date for ubuntu:latest
+docker.io/library/ubuntu:latest
+
+		# вот он в списке:
+
+myshasolin@myshasolin-VB:~$ docker images
+REPOSITORY               TAG       IMAGE ID       CREATED        SIZE
+my_nginx_image           latest    ac4a93362371   11 hours ago   165MB
+ubuntu                   latest    d13c942271d6   3 weeks ago    72.8MB
+docker/getting-started   latest    26d80cd96d69   2 months ago   28.5MB
+hello-world              latest    feb5d9fea6a5   4 months ago   13.3kB
+
+		# запустим из образа контейнер и зайдём в него, спросим имя и выйдем
+
+myshasolin@myshasolin-VB:~$ docker run --name testUbuntu -it ubuntu:latest /bin/bash
+root@65714b0d3c76:/# whoami
+root
+root@65714b0d3c76:/# exit
+exit
+
+		# позапускаем ещё контейнеров из образа ubuntu, выполним команду cat /etc/issue
+
+myshasolin@myshasolin-VB:~$ docker run ubuntu cat /etc/issue
+Ubuntu 20.04.3 LTS \n \l
+myshasolin@myshasolin-VB:~$ docker ps -l
+CONTAINER ID   IMAGE     COMMAND            CREATED          STATUS                      PORTS     NAMES
+b13a49b6172b   ubuntu    "cat /etc/issue"   21 minutes ago   Exited (0) 21 minutes ago             affectionate_sanderson
+myshasolin@myshasolin-VB:~$ docker start b13a49b6172b
+b13a49b6172b
+
+myshasolin@myshasolin-VB:~$ docker run --name test2Ubuntu ubuntu cat /etc/issue
+Ubuntu 20.04.3 LTS \n \l
+
+myshasolin@myshasolin-VB:~$ docker run --name test3Ubuntu -it ubuntu:latest /bin/bash
+root@63e71f54c38a:/# cd home/
+root@63e71f54c38a:/home# ll
+total 8
+drwxr-xr-x 2 root root 4096 Apr 15  2020 ./
+drwxr-xr-x 1 root root 4096 Feb  1 13:12 ../
+root@63e71f54c38a:/home# exit
+exit
+
+
+myshasolin@myshasolin-VB:~$ docker ps -a
+CONTAINER ID   IMAGE           COMMAND            CREATED          STATUS                          PORTS     NAMES
+63e71f54c38a   ubuntu:latest   "/bin/bash"        2 minutes ago    Exited (0) About a minute ago             test3Ubuntu
+096812ceb2fc   ubuntu          "cat /etc/issue"   5 minutes ago    Exited (0) 5 minutes ago                  test2Ubuntu
+b13a49b6172b   ubuntu          "cat /etc/issue"   32 minutes ago   Exited (0) 9 minutes ago                  affectionate_sanderson
+06b491033fcb   hello-world     "/hello"           39 minutes ago   Exited (0) 39 minutes ago                 cranky_albattani
+50d1eed994cf   ubuntu          "bash"             50 minutes ago   Exited (0) 50 minutes ago                 wonderful_nobel
+65714b0d3c76   ubuntu:latest   "/bin/bash"        53 minutes ago   Exited (0) 52 minutes ago                 testUbuntu
+
+		# ну и почистим историю (как делали на занятии):
+
+myshasolin@myshasolin-VB:~$ docker rm $(docker ps -aq)
+63e71f54c38a
+096812ceb2fc
+b13a49b6172b
+06b491033fcb
+50d1eed994cf
+65714b0d3c76
+myshasolin@myshasolin-VB:~$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+

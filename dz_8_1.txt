@@ -1,0 +1,121 @@
+		# 1. Переустановить операционную систему (по желанию, для дополнительной практики)
+
+		# несколько раз переустанавливал Ubuntu, сейчас поставил себе дополнительно Ubuntu Server (для той самой учебной практики), захожу туда периодидески, заботливо обновляюсь и ухожу.
+		# Вот сейчас для примера зайду из Ubuntu Desktop на Ubuntu Server по SSH:
+
+myshasolin@myshasolin-VB:~$ hostname -I
+192.168.1.73 172.17.0.1 
+
+myshasolin@myshasolin-VB:~$ ssh myshasolin@192.168.1.75
+The authenticity of host '192.168.1.75 (192.168.1.75)' can't be established.
+ECDSA key fingerprint is SHA256:JLi+hdTC7aFXJMvjLBZt2On2evJlgqh8zKZrnYUp/HA.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+
+Warning: Permanently added '192.168.1.75' (ECDSA) to the list of known hosts.
+myshasolin@192.168.1.75's password: 
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.4.0-96-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Вт 01 фев 2022 14:40:58 MSK
+
+  System load:  0.06              Processes:               141
+  Usage of /:   51.6% of 9.78GB   Users logged in:         1
+  Memory usage: 17%               IPv4 address for enp0s3: 192.168.1.75
+  Swap usage:   0%
+
+
+0 updates can be applied immediately.
+
+
+*** System restart required ***
+Last login: Tue Feb  1 14:29:55 2022
+
+		# посмотрим дерево файлов:
+
+myshasolin@myshasolin:~$ tree
+.
+├── dead.letter
+└── my_file.txt
+
+1 directory, 1 file
+myshasolin@myshasolin:~$ hostname -I
+192.168.1.75 
+
+		# уйдём
+
+myshasolin@myshasolin:~$ exit
+logout
+Connection to 192.168.1.75 closed.
+
+		# а вот такое же дерево файлов, но уже в Ubuntu Desktop:
+
+myshasolin@myshasolin-VB:~$ tree
+.
+├── dz
+│   ├── cronlog.log
+│   ├── d
+│   │   └── Dockerfile
+│   ├── dz_4
+│   │   ├── cat_reed.txt
+│   │   ├── errors.txt
+│   │   ├── file_1
+│   │   └── file_cat
+│   ├── dz_5
+│   │   ├── arbitrary_file_1
+│   │   ├── arbitrary_file_2
+│   │   ├── task_6 [error opening dir]
+│   │   └── working_directory
+│   │       └── for_file_sharing
+│   │           ├── file_user1.txt
+│   │           └── file_user2.txt
+│   ├── dz_6
+│   │   ├── task_2.sh
+│   │   ├── test.txt
+│   │   └── test.txt.bak
+│   ├── iptables-config
+│   ├── les_5
+│   │   ├── age_check.sh
+│   │   ├── burger_cost
+│   │   ├── burger_cost.save
+│   │   ├── hello.py
+│   │   ├── hello.py.save
+│   │   ├── script.sh
+│   │   ├── until_sample.sh
+│   │   └── while_sample.sh
+│   ├── script1.sh
+│   └── tratata.sh
+├── les_5
+├── nginx.list
+├── nginx_signing.key
+├── snap
+│   ├── canonical-livepatch
+│   │   ├── 126
+│   │   ├── common
+│   │   └── current -> 126
+│   ├── opera
+│   │   └── current -> 159
+│   ├── snap-store
+│   │   ├── 547
+│   │   ├── 558
+│   │   ├── common
+│   │   └── current -> 558
+│   └── spotify
+│       ├── 56
+│       ├── 57
+│       ├── common
+│       └── current -> 56
+├── zip_3.0-11build1_amd64.deb
+├── Видео
+├── Документы
+├── Загрузки
+├── Изображения
+├── Музыка
+├── Общедоступные
+├── Рабочий стол
+│   └── mciri.txt
+└── Шаблоны
+
+34 directories, 29 files

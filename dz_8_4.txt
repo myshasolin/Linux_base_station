@@ -1,0 +1,51 @@
+		# 4. * Используя Dockerfile, собрать связку nginx + PHP-FPM в одном контейнере.
+
+		# создаём файл
+
+myshasolin@myshasolin-VB:~/dz/dz_8$ nano Dockerfile
+
+		# в нём пишем: 
+
+myshasolin@myshasolin-VB:~/dz/dz_8$ cat Dockerfile 
+FROM ubuntu:latest
+MAINTAINER myshasolin
+
+ENV TZ="Europe/Moscow"
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update
+RUN apt-get install -y nginx php php-fpm
+RUN mkdir /run/php-pfm
+VOLUME "var/www/html"
+EXPOSE 80
+COPY ./html/ /usr/share/nginx/html/
+CMD /usr/sbin/nginx -a "daemon off;"
+
+		# запускаем
+
+myshasolin@myshasolin-VB:~/dz/dz_8$ docker build -t nginx_php_image .
+
+		# идёт длинная такая установка, после которой в списке образов появляется наш nginx_php_image
+
+myshasolin@myshasolin-VB:~/dz/dz_8$ docker images
+REPOSITORY               TAG       IMAGE ID       CREATED              SIZE
+nginx_php_image          latest    dd1c0b9d2d55   About a minute ago   311MB
+my_nginx_image           latest    ac4a93362371   14 hours ago         165MB
+ubuntu                   latest    d13c942271d6   3 weeks ago          72.8MB
+docker/getting-started   latest    26d80cd96d69   2 months ago         28.5MB
+hello-world              latest    feb5d9fea6a5   4 months ago         13.3kB
+
+		# запускаем контейнер из образа:
+
+myshasolin@myshasolin-VB:~/dz/dz_8$ docker run -d -p 100:80 nginx_php_image
+ecb8d04de7d29883c038d095c3baebb8f8658275eeb113659fc0a0e62a1cdcd0
+
+		# а вот он в истории:
+
+myshasolin@myshasolin-VB:~/dz/dz_8$ docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS                      PORTS     NAMES
+ecb8d04de7d2   nginx_php_image   "/bin/sh -c '/usr/sb…"   45 seconds ago   Exited (1) 44 seconds ago             lucid_chatterjee
+
+
+
+
